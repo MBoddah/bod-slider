@@ -1,0 +1,21 @@
+.offer__slider {
+    margin: 0;
+    padding: 0;
+    width: 600px;
+    display: flex;
+}
+
+.offer__slider-wrapper {
+    width: 100%;
+}
+
+.offer__slide {
+    width: 600px;
+    height: 390px;
+}
+
+.offer__slide img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+}
