@@ -3,6 +3,8 @@
 function slider( {
     selectors,   // Object of selectors Required: slide, container
     slidesList,  // Array of slide objects. Required properties: imgPath, alt.
+    startSlideIndex,  //Index of start slide
+    activateNavigationDots, // Expects true for creating navigation dots
     activateLoop,
     actuvateAutoTurning,
     activateLinks,
@@ -48,23 +50,50 @@ function slider( {
         }
     }
     
-    slidesList.forEach(slide => {
+    slidesList.forEach(slide => {           // Creates slides from array of slides and renders it
         new sliderItem(slide).render();
     });
 
     const slider = document.querySelector(bodSelectors.sliderSelector),
         slides = document.querySelectorAll(bodSelectors.slidesSelector),
         slidesWrapper = document.querySelector(bodSelectors.wrapperSelector) || createSliderElement(slider, bodSelectors.wrapperSelector),
-        slidesInner = document.querySelector(bodSelectors.innerSelector) || createSliderElement(slidesWrapper, bodSelectors.innerSelector),
+        sliderInner = document.querySelector(bodSelectors.innerSelector) || createSliderElement(slidesWrapper, bodSelectors.innerSelector),
         arrowPrev = document.querySelector(bodSelectors.prevArrowSelector) || createSliderElement(slidesWrapper, bodSelectors.prevArrowSelector),
         arrowNext = document.querySelector(bodSelectors.nextArrowSelector) || createSliderElement(slidesWrapper , bodSelectors.nextArrowSelector);
 
-    slidesInner.style.width = slides.length * 100 + '%';
-    slidesInner.style.display = 'flex';
-    slidesInner.style.transition = '.5s all';
+    sliderInner.style.width = slides.length * 100 + '%';        // Inits slider
+    sliderInner.style.display = 'flex';
+    sliderInner.style.transition = '.5s all';
     slidesWrapper.style.overflow = 'hidden';
 
+    let currentSlide = startSlideIndex - 1 || 0;
+    const width = window.getComputedStyle(slidesWrapper).width,
+        indicators = [];
+    let offset = width.replace(/\D/g, '')*currentSlide;
+
+    sliderInner.style.transform = `translateX(-${offset}px)`;
+
     renderArrows(leftArrowImg, rightArrowImg, arrowPrev, arrowNext);
+
+    if (activateNavigationDots === true) {
+        createDots(slides, indicators, slider);
+    }
+
+    arrowPrev.addEventListener('click', () =>{
+        [currentSlide, offset] = showSlide(slides, --currentSlide, offset, width , sliderInner, indicators)
+    })
+
+    arrowNext.addEventListener('click', () =>{
+        [currentSlide, offset] = showSlide(slides, ++currentSlide, offset, width , sliderInner, indicators)
+    })
+
+    
+    indicators.forEach( (dot) => {
+        dot.addEventListener('click', (e) => {
+            const slideTo = e.target.getAttribute('data-slide-to');
+            [currentSlide, offset] = showSlide(slides, slideTo - 1, offset, width , sliderInner, indicators)
+        })
+    })
 
     function createSliderElement(parentElement, elementClass) {
         const newElement = document.createElement('div');
@@ -93,6 +122,47 @@ function slider( {
         leftContainer.append(left);
         rightContainer.append(right);
     }
+
+    function createDots(slides, indicators, slider) {
+        const dots = document.createElement('ol');
+
+        dots.classList.add('slider__indicators');
+        slider.append(dots);
+
+        for (let i = 0; i < slides.length; i++) {
+            const dot = document.createElement('li');
+            dot.setAttribute('data-slide-to', i + 1);
+            dot.classList.add('slider__dot');
+
+            if ( i == 0) {
+                dot.style.opacity = 1;
+            }
+
+            dots.append(dot);
+            indicators.push(dot);
+        }
+    }
+
+    function showSlide(slides, slideIndex, offset, width, sliderInner, indicators) {
+
+        if (slideIndex < 0) {
+            slideIndex = slides.length - 1;
+        } 
+
+        if (slideIndex == slides.length) {
+            slideIndex = 0;
+        }
+
+        offset = width.replace(/\D/g, '')*slideIndex;
+        sliderInner.style.transform = `translateX(-${offset}px)`;
+
+        if(indicators.length > 0) {
+            indicators.forEach( (dot) => dot.style.opacity = '.5');
+            indicators[slideIndex].style.opacity = 1;
+        }
+
+        return [slideIndex, offset];
+    }
 }
 
 const selectors = {
@@ -113,5 +183,7 @@ slider({
     selectors, 
     slidesList,
     leftArrowImg: 'icons/left.svg',
-    rightArrowImg: 'icons/right.svg'
+    rightArrowImg: 'icons/right.svg',
+    startSlideIndex: 2,
+    activateNavigationDots: true
 });
