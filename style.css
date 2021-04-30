@@ -12,13 +12,14 @@
 }
 
 .slider__slide {
+    overflow: hidden;
     position: relative;
     width: 600px;
     height: 390px;
 }
 
 .slider__slide img {
-    height: 100%;
+    height: auto;
     width: 100%;
     object-fit: cover;
 }
@@ -35,21 +36,37 @@
 }
 
 .slider__next{
+    display: flex;
+    border-radius: 50%;
     position: absolute;
     top: 45%;
-    height: 10%;
+    height: 50px;
     width: 50px;
     right: 0;
-    background-color: rgba(0,0,0,.4);
+    background-color: rgba(255,255,255,.4);
 }
 
 .slider__prev{
+    display: flex;
+    border-radius: 50%;
     position: absolute;
     top: 45%;
-    height: 10%;
+    height: 50px;
     width: 50px;
     left: 0;
-    background-color: rgba(0,0,0,.4);
+    background-color: rgba(255,255,255,.4);
+}
+
+.slider__prev img {
+    height: 30px;
+    width: 30px;
+    margin: auto;
+}
+
+.slider__next img {
+    height: 30px;
+    width: 30px;
+    margin: auto;
 }
 
 .slider__indicators{
