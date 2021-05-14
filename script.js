@@ -9,7 +9,7 @@ function slider( {
     turningInterval,  // Auto turn timeout. Default: 10000.
     activateSlidesMoving, // Expects true for auto scrolling elongated imgs and scoping others.
     autoScrollSpeed, // Expects auto img scroll speed. Recomended speed: 1-5. Default: 2.
-    autoScopeSpeed, //
+    autoScopeSpeed, //Expects auto img scope speed. Recomended speed: 1-5. Default: 2.
     leftArrowImg,
     rightArrowImg}) {
 
@@ -61,6 +61,8 @@ function slider( {
         indicators = [];
     let offset = width.replace(/\D/g, '')*currentSlide;
     let timerTurn;
+    let startingSwipeX,
+        changedSwipeX;
 
     renderArrows(leftArrowImg, rightArrowImg, arrowPrev, arrowNext);
 
@@ -93,24 +95,28 @@ function slider( {
         if (activateAutoTurning === true) {
             const time = turningInterval || 10000;
             timerTurn = setInterval( () => {
-                [currentSlide, offset] = showSlide(slides, ++currentSlide, offset, width , sliderInner, indicators)
+                currentSlide = showSlide(slides, ++currentSlide, offset, width , sliderInner, indicators)
+                offset = updateOffset(currentSlide, width);
             }, time);
         } else {
             warnAboutUnexpectedValue('actiateAutoTurning')
         }
     }
     
-    [currentSlide, offset] = showSlide(slides, currentSlide, offset, width , sliderInner, indicators)      // Shows start slide
+    currentSlide = showSlide(slides, currentSlide, offset, width , sliderInner, indicators)      // Shows start slide
+    offset = updateOffset(currentSlide, width); 
 
     arrowPrev.addEventListener('click', () =>{                                                             // Activates slider controls
-        [currentSlide, offset] = showSlide(slides, --currentSlide, offset, width , sliderInner, indicators)
+        currentSlide = showSlide(slides, --currentSlide, offset, width , sliderInner, indicators)
+        offset = updateOffset(currentSlide, width);
         if (activateAutoTurning === true) {
             clearInterval(timerTurn);
         }
     })
 
     arrowNext.addEventListener('click', () =>{
-        [currentSlide, offset] = showSlide(slides, ++currentSlide, offset, width , sliderInner, indicators)
+        currentSlide = showSlide(slides, ++currentSlide, offset, width , sliderInner, indicators);
+        offset = updateOffset(currentSlide, width);
         if (activateAutoTurning === true) {
             clearInterval(timerTurn);
         }
@@ -120,9 +126,36 @@ function slider( {
     indicators.forEach( (dot) => {
         dot.addEventListener('click', (e) => {
             const slideTo = e.target.getAttribute('data-slide-to');
-            [currentSlide, offset] = showSlide(slides, slideTo - 1, offset, width , sliderInner, indicators)
+            currentSlide = showSlide(slides, slideTo - 1, offset, width , sliderInner, indicators);
+            offset = updateOffset(currentSlide, width);
+            if (activateAutoTurning === true) {
+                clearInterval(timerTurn);
+            }
         })
     })
+
+    //Activate swipes
+    sliderInner.addEventListener('touchstart', (event) => {
+        startingSwipeX = getStartingSwipeX(event);
+        if (activateAutoTurning === true) {
+            clearInterval(timerTurn);
+        }
+    })
+
+    sliderInner.addEventListener('touchmove', (event) => {
+        changedSwipeX = getChangedSwipeX(event, startingSwipeX);
+        sliderInner.style.transform = `translateX(${-offset + changedSwipeX}px)`;
+    })
+
+    sliderInner.addEventListener('touchend', () => {
+        const swipeTo = getSwipe(changedSwipeX, width.replace(/\Bpx/g, '')/3, currentSlide)
+        currentSlide = showSlide(slides, +swipeTo, offset, width , sliderInner, indicators)
+        offset = updateOffset(currentSlide, width);
+    })
+
+    function updateOffset(slide, width) {
+        return width.replace(/\D/g, '')*slide;
+    }
 
     function createSliderElement(parentElement, elementClass) {
         const newElement = document.createElement('div');
@@ -173,7 +206,6 @@ function slider( {
     }
 
     function showSlide(slides, slideIndex, offset, width, sliderInner, indicators) {
-
         if (slideIndex < 0) {
             slideIndex = slides.length - 1;
         } 
@@ -182,15 +214,41 @@ function slider( {
             slideIndex = 0;
         }
 
-        offset = width.replace(/\D/g, '')*slideIndex;
+        offset = width.replace(/\Bpx/g, '')*slideIndex;
         sliderInner.style.transform = `translateX(-${offset}px)`;
 
         if(indicators.length > 0) {
             indicators.forEach( (dot) => dot.style.opacity = '.5');
             indicators[slideIndex].style.opacity = 1;
         }
+        console.log(`slideIndex: ${slideIndex} offset: ${offset}`)
+        return slideIndex;
+    }
 
-        return [slideIndex, offset];
+    function getStartingSwipeX(event) {
+        return event.touches[0].clientX;
+    }
+
+    function getChangedSwipeX(event, start) {
+        return event.touches[0].clientX - start;
+    }
+
+    function getSwipe(change, part, current) {
+        console.log(change)
+        if(Math.abs(change) < part) {
+            console.log('Not enough')
+            return current;
+        }
+
+        if(change < -part) {
+            console.log('Back')
+            return ++current;
+        } else {
+            if(change > part) {
+                console.log('For')
+                return --current;
+            }
+        }
     }
 
     function scrollImg(img, speed) {
@@ -234,8 +292,8 @@ slider({
     rightArrowImg: 'icons/arrow-right.png',
     startSlideIndex: 2,
     activateNavigationDots: true,
-    activateAutoTurning: true,
-    turningInterval: 2000,
+    //activateAutoTurning: true,
+    //turningInterval: 2000,
     activateSlidesMoving: true,
     autoScrollSpeed: 2,
     autoScopeSpeed: 2
