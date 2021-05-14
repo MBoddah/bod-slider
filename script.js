@@ -221,7 +221,6 @@ function slider( {
             indicators.forEach( (dot) => dot.style.opacity = '.5');
             indicators[slideIndex].style.opacity = 1;
         }
-        console.log(`slideIndex: ${slideIndex} offset: ${offset}`)
         return slideIndex;
     }
 
@@ -234,18 +233,14 @@ function slider( {
     }
 
     function getSwipe(change, part, current) {
-        console.log(change)
         if(Math.abs(change) < part) {
-            console.log('Not enough')
             return current;
         }
 
         if(change < -part) {
-            console.log('Back')
             return ++current;
         } else {
             if(change > part) {
-                console.log('For')
                 return --current;
             }
         }
