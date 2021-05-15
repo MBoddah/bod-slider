@@ -59,7 +59,7 @@ function slider( {
     let currentSlide = startSlideIndex - 1 || 0;
     const width = window.getComputedStyle(slidesWrapper).width,
         indicators = [];
-    let offset = width.replace(/\D/g, '')*currentSlide;
+    let offset = width.replace(/\px/g, '')*currentSlide;
     let timerTurn;
     let startingSwipeX,
         changedSwipeX;
@@ -154,7 +154,7 @@ function slider( {
     })
 
     function updateOffset(slide, width) {
-        return width.replace(/\D/g, '')*slide;
+        return width.replace(/\px/g, '')*slide;
     }
 
     function createSliderElement(parentElement, elementClass) {
