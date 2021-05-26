@@ -4,7 +4,7 @@ function slider( {
     selectors,   // Object of selectors Required: slide, container.
     slidesList,  // Array of slide objects. Required properties: imgPath, alt.
     startSlideIndex,  // Index of start slide. Default: 1.
-    activateNavigationDots, // Expects true for creating navigation dots.
+    activateNavigationDots, // Expects true for creating navigation dots for recieved slides.
     activateAutoTurning,  // Expexts true for activating autoturning. Works while arrow havent touched.
     turningInterval,  // Auto turn timeout. Default: 10000.
     activateSlidesMoving, // Expects true for auto scrolling elongated imgs and scoping others.
@@ -40,9 +40,11 @@ function slider( {
         }
     }
     
-    slidesList.forEach(slide => {           // Creates slides from array of slides and renders it
-        new sliderItem(slide).render();
-    });
+    if(slidesList) {
+        slidesList.forEach(slide => {           // Creates slides from array of slides and renders it
+            new sliderItem(slide).render();
+        });
+    }
 
     const slider = document.querySelector(bodSelectors.sliderSelector),         // Inits slider
         slides = document.querySelectorAll(bodSelectors.slidesSelector),
@@ -64,7 +66,9 @@ function slider( {
     let startingSwipeX,
         changedSwipeX;
 
-    renderArrows(leftArrowImg, rightArrowImg, arrowPrev, arrowNext);
+    if(leftArrowImg && rightArrowImg) {
+        renderArrows(leftArrowImg, rightArrowImg, arrowPrev, arrowNext);
+    }
 
     if (activateNavigationDots) {
         if (activateNavigationDots === true) {                  // Inits selected options
@@ -282,11 +286,11 @@ const slidesList = [
 
 slider({
     selectors, 
-    slidesList,
-    leftArrowImg: 'icons/arrow-left.png',
-    rightArrowImg: 'icons/arrow-right.png',
+    //slidesList,
+    //leftArrowImg: 'icons/arrow-left.png',
+    //rightArrowImg: 'icons/arrow-right.png',
     startSlideIndex: 2,
-    activateNavigationDots: true,
+    //activateNavigationDots: true,
     //activateAutoTurning: true,
     //turningInterval: 2000,
     activateSlidesMoving: true,

@@ -1,19 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bod-slider</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js" defer></script>
-</head>
-<body>
-    <div class="slider">    
-        <div class="slider__wrapper">
-            <div class="slider__inner">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>bod-slider</title>
+        <link rel="stylesheet" href="style.css">
+        <script src="script.js" defer></script>
+    </head>
+    <body>
+        <div class="slider">    
+            <div class="slider__wrapper">
+                <div class="slider__inner">
+                    <div class="slider__slide">
+                        <img src="img/slider/pepper.jpg" alt="pepper">
+                    </div>
+                    <div class="slider__slide">
+                        <img src="img/slider/food-12.png" alt="food">
+                    </div>
+                    <div class="slider__slide">
+                        <img src="img/slider/olive-oil.jpg" alt="oil">
+                        <div class="slider__overlay">
+                            <div class="slider__text">Пилот 1</div>
+                        </div>
+                    </div>
+                    <div class="slider__slide">
+                        <img src="img/slider/paprika.jpg" alt="paprika">
+                    </div>
+                </div>
+                <div class="slider__prev">
+                    <img src="icons/arrow-left.png">
+                </div>
+                <div class="slider__next">
+                    <img src="icons/arrow-right.png">
+                </div>
             </div>
+            <ol class="slider__indicators">
+                <li data-slide-to="1" class="slider__dot"></li>
+                <li data-slide-to="2" class="slider__dot"></li>
+                <li data-slide-to="3" class="slider__dot"></li>
+                <li data-slide-to="4" class="slider__dot"></li>
+            </ol>
         </div>
-    </div>
-</body>
+    </body>
 </html>
